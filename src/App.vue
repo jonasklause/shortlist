@@ -7,7 +7,7 @@ const store = useTodoStore()
 const editingTodoId = ref<string | null>(null)
 
 const formatDate = (date: Date): string => {
-  return date.toISOString().split('T')[0]
+  return date.toISOString().split('T')[0]!
 }
 
 const today = computed(() => formatDate(new Date()))
@@ -51,12 +51,12 @@ const handleMoveToDay = (fromDate: string, todoId: string, direction: 'up' | 'do
 
   if (direction === 'up' && currentIndex > 0) {
     // Move to previous day (end of list)
-    const prevDate = sortedLists[currentIndex - 1].date
+    const prevDate = sortedLists[currentIndex - 1]!.date
     const prevList = store.getDayList(prevDate)
     store.moveTodoToDay(fromDate, prevDate, todoId, prevList.todos.length)
   } else if (direction === 'down' && currentIndex < sortedLists.length - 1) {
     // Move to next day (beginning of list)
-    const nextDate = sortedLists[currentIndex + 1].date
+    const nextDate = sortedLists[currentIndex + 1]!.date
     store.moveTodoToDay(fromDate, nextDate, todoId, 0)
   }
 

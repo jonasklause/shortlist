@@ -102,8 +102,8 @@ export const useTodoStore = defineStore('todos', () => {
     if (newIndex < 0 || newIndex >= dayList.todos.length) return
 
     // Swap
-    const temp = dayList.todos[index]
-    dayList.todos[index] = dayList.todos[newIndex]
+    const temp = dayList.todos[index]!
+    dayList.todos[index] = dayList.todos[newIndex]!
     dayList.todos[newIndex] = temp
 
     // Update order
@@ -131,7 +131,7 @@ export const useTodoStore = defineStore('todos', () => {
 
     // Add to target day
     const toDayList = getDayList(toDate)
-    toDayList.todos.splice(toIndex, 0, todo)
+    toDayList.todos.splice(toIndex, 0, todo!)
 
     // Reorder target day
     toDayList.todos.forEach((t, idx) => {
