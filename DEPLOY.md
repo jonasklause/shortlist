@@ -25,7 +25,7 @@ The app will automatically deploy when you push to the `main` branch.
 
 After the first deployment, your app will be available at:
 ```
-https://YOUR_USERNAME.github.io/shortlist/
+https://jonasklause.github.io/shortlist/
 ```
 
 ## Manual Build
