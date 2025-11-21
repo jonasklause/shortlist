@@ -1,8 +1,8 @@
 const CACHE_NAME = 'shortlist-v1'
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ]
 
 // Install service worker
@@ -11,6 +11,7 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(urlsToCache))
       .then(() => self.skipWaiting())
+      .catch((err) => console.error('Failed to cache:', err))
   )
 })
 
