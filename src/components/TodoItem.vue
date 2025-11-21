@@ -20,16 +20,24 @@ const emit = defineEmits<{
 const editText = ref(props.todo.text)
 const editUrl = ref(props.todo.url)
 const inputRef = ref<HTMLInputElement | null>(null)
+const showUrlInput = ref(false)
 
 watch(() => props.todo, (newTodo) => {
   editText.value = newTodo.text
   editUrl.value = newTodo.url
 }, { deep: true })
 
-watch(() => props.isEditing, (editing) => {
+watch(() => props.isEditing, async (editing) => {
   if (editing) {
     editText.value = props.todo.text
     editUrl.value = props.todo.url
+    // Show URL input if URL already exists
+    showUrlInput.value = !!props.todo.url
+    // Focus the input field
+    await nextTick()
+    inputRef.value?.focus()
+  } else {
+    showUrlInput.value = false
   }
 })
 
@@ -110,8 +118,16 @@ onUnmounted(() => {
         :checked="todo.completed"
         @change="toggleComplete"
         class="todo-checkbox"
+        tabindex="0"
       />
-      <div class="todo-content" @click="startEdit">
+      <div
+        class="todo-content"
+        @click="startEdit"
+        @keydown.enter="startEdit"
+        @keydown.space.prevent="startEdit"
+        tabindex="0"
+        role="button"
+      >
         <span class="todo-text">{{ todo.text }}</span>
         <a
           v-if="todo.url"
@@ -119,28 +135,55 @@ onUnmounted(() => {
           target="activecollab"
           class="todo-link"
           @click.stop
+          tabindex="0"
         >
           🔗
         </a>
       </div>
-      <button @click="$emit('delete')" class="delete-btn">×</button>
+      <button
+        @click="$emit('delete')"
+        class="delete-btn"
+        tabindex="0"
+      >×</button>
     </div>
 
     <div v-else class="todo-edit" @keydown="handleKeydown">
-      <input
-        ref="inputRef"
-        v-model="editText"
-        type="text"
-        class="edit-input"
-        placeholder="Todo text"
-        autofocus
-      />
-      <input
-        v-model="editUrl"
-        type="text"
-        class="edit-url"
-        placeholder="URL (optional)"
-      />
+      <div class="edit-row">
+        <input
+          ref="inputRef"
+          v-model="editText"
+          type="text"
+          class="edit-input"
+          placeholder="Todo text"
+          tabindex="0"
+        />
+        <input
+          v-if="showUrlInput"
+          v-model="editUrl"
+          type="text"
+          class="edit-url"
+          placeholder="URL"
+          tabindex="0"
+        />
+        <button
+          v-if="showUrlInput && editUrl"
+          @click="editUrl = ''; showUrlInput = false"
+          class="url-action-btn"
+          title="Remove URL"
+          tabindex="0"
+        >
+          ×
+        </button>
+        <button
+          v-if="!showUrlInput"
+          @click="showUrlInput = true"
+          class="url-action-btn"
+          title="Add link"
+          tabindex="0"
+        >
+          🔗
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -185,6 +228,12 @@ onUnmounted(() => {
   gap: 6px;
   min-height: 20px;
   font-size: 14px;
+  border-radius: 2px;
+  outline: none;
+}
+
+.todo-content:focus {
+  box-shadow: 0 0 0 2px #4CAF50;
 }
 
 .todo-text {
@@ -233,9 +282,15 @@ onUnmounted(() => {
   gap: 4px;
 }
 
-.edit-input,
-.edit-url {
-  width: 100%;
+.edit-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.edit-input {
+  flex: 1;
+  min-width: 0;
   padding: 4px 6px;
   border: 1px solid #ddd;
   border-radius: 3px;
@@ -243,9 +298,39 @@ onUnmounted(() => {
   font-family: inherit;
 }
 
+.edit-url {
+  flex: 0.6;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
 .edit-input:focus,
 .edit-url:focus {
   outline: none;
   border-color: #4CAF50;
+}
+
+.url-action-btn {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 3px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.url-action-btn:hover {
+  background: #e0e0e0;
 }
 </style>

@@ -1,27 +1,26 @@
-# shortlist
+# Shortlist
 
-This template should help get you started developing with Vue 3 in Vite.
+A simple, clean daily todo list manager built as a Progressive Web App (PWA).
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+✅ **Daily Organization** - Create todo lists for each day
+✅ **Quick Entry** - Type and press Enter to add todos
+✅ **Inline Editing** - Click any todo to edit with auto-save
+✅ **URL Support** - Add links to todos (optional)
+✅ **Keyboard Navigation** - Fully accessible with Tab and keyboard shortcuts
+✅ **Move Todos** - Drag & drop or use Option+Up/Down to move todos
+✅ **Cross-Day Movement** - Move todos between different days
+✅ **Copy Open Todos** - Copy unfinished tasks from previous day
+✅ **Offline Support** - Works without internet (PWA)
+✅ **Local Storage** - All data saved in your browser
 
-## Recommended Browser Setup
+## Keyboard Shortcuts
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Enter** - Save new todo / Finish editing
+- **Escape** - Cancel editing
+- **Tab** - Navigate between elements
+- **Option + ↑/↓** - Move todo up/down (within or across days)
 
 ## Project Setup
 
@@ -29,14 +28,32 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Development
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Build for Production
 
 ```sh
 npm run build
 ```
+
+### Preview Production Build
+
+```sh
+npm run preview
+```
+
+## Deployment
+
+See [DEPLOY.md](./DEPLOY.md) for GitHub Pages deployment instructions.
+
+## Tech Stack
+
+- Vue 3 + TypeScript
+- Pinia (state management)
+- Vite
+- PWA (Service Worker + Web Manifest)
+- LocalStorage for persistence

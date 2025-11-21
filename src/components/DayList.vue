@@ -27,17 +27,13 @@ const formattedDate = computed(() => {
   return `${weekday}, ${day}.${month}.${year}`
 })
 
-const addTodo = () => {
-  if (newTodoText.value.trim()) {
-    store.createTodo(props.date, newTodoText.value.trim())
-    newTodoText.value = ''
-  }
-}
-
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Enter') {
     e.preventDefault()
-    addTodo()
+    if (newTodoText.value.trim()) {
+      store.createTodo(props.date, newTodoText.value.trim())
+      newTodoText.value = ''
+    }
   }
 }
 
@@ -116,11 +112,10 @@ const handleDropAtEnd = (e: DragEvent) => {
         />
       </div>
     <div class="add-todo">
-
       <input
         v-model="newTodoText"
         type="text"
-        placeholder="Add a new todo (press Enter to save)"
+        placeholder="Type to add a new todo..."
         class="add-todo-input"
         @keydown="handleKeydown"
       />
