@@ -32,6 +32,11 @@ self.addEventListener('activate', (event) => {
 
 // Fetch strategy: Network first, falling back to cache
 self.addEventListener('fetch', (event) => {
+  // Skip non-HTTP(S) requests (like chrome-extension://)
+  if (!event.request.url.startsWith('http')) {
+    return
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
