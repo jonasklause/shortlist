@@ -74,6 +74,18 @@ export const useTodoStore = defineStore('todos', () => {
     }
   }
 
+  // Delete daylist if empty
+  const deleteEmptyDayList = (date: string) => {
+    const dayListIndex = dayLists.value.findIndex(dl => dl.date === date)
+    if (dayListIndex !== -1) {
+      const dayList = dayLists.value[dayListIndex]!
+      if (dayList.todos.length === 0) {
+        dayLists.value.splice(dayListIndex, 1)
+        saveToStorage()
+      }
+    }
+  }
+
   // Delete todo
   const deleteTodo = (date: string, todoId: string) => {
     const dayList = dayLists.value.find(dl => dl.date === date)
@@ -87,6 +99,8 @@ export const useTodoStore = defineStore('todos', () => {
         todo.order = idx
       })
       saveToStorage()
+      // Remove daylist if it's now empty
+      deleteEmptyDayList(date)
     }
   }
 
@@ -139,6 +153,9 @@ export const useTodoStore = defineStore('todos', () => {
     })
 
     saveToStorage()
+
+    // Remove source daylist if it's now empty
+    deleteEmptyDayList(fromDate)
   }
 
   // Copy open todos from previous day

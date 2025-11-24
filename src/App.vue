@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useTodoStore } from './stores/todoStore'
+import { useUiStore } from './stores/uiStore'
 import DayList from './components/DayList.vue'
 
 const store = useTodoStore()
+const uiStore = useUiStore()
 const editingTodoId = ref<string | null>(null)
 
 const formatDate = (date: Date): string => {
@@ -40,6 +42,17 @@ const hasTodayList = computed(() => {
 const hasYesterdayOpenTodos = computed(() => {
   const yesterdayList = store.dayLists.find(dl => dl.date === yesterday.value)
   return yesterdayList?.todos.some(t => !t.completed) ?? false
+})
+
+const filteredDayLists = computed(() => {
+  let lists = store.sortedDayLists
+
+  // Filter past days if "Show Past" is disabled
+  if (!uiStore.showPast) {
+    lists = lists.filter(dl => dl.date >= today.value)
+  }
+
+  return lists
 })
 
 const handleMoveToDay = (fromDate: string, todoId: string, direction: 'up' | 'down') => {
@@ -89,17 +102,39 @@ const handleMoveToDay = (fromDate: string, todoId: string, direction: 'up' | 'do
           @click="createTomorrowList"
           class="secondary-btn"
         >
-          Create Tomorrow's List
+          Create tomorrow's list
         </button>
+
+        <div class="filter-toggles">
+          <button
+            @click="uiStore.toggleShowDone"
+            :class="{ active: uiStore.showDone }"
+            class="toggle-btn"
+            title="Show/hide completed todos"
+          >
+            <span class="toggle-indicator">{{ uiStore.showDone ? '✓' : '✕' }}</span>
+            Show done todos
+          </button>
+          <button
+            @click="uiStore.toggleShowPast"
+            :class="{ active: uiStore.showPast }"
+            class="toggle-btn"
+            title="Show/hide past days"
+          >
+            <span class="toggle-indicator">{{ uiStore.showPast ? '✓' : '✕' }}</span>
+            Show past days
+          </button>
+        </div>
       </div>
     </header>
 
     <main class="app-main">
       <DayList
-        v-for="dayList in store.sortedDayLists"
+        v-for="dayList in filteredDayLists"
         :key="dayList.date"
         :date="dayList.date"
         :editing-todo-id="editingTodoId"
+        :show-done="uiStore.showDone"
         @set-editing-todo="editingTodoId = $event"
         @request-move-to-day="(todoId, direction) => handleMoveToDay(dayList.date, todoId, direction)"
       />
@@ -145,6 +180,13 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
+}
+
+.filter-toggles {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .primary-btn,
@@ -178,6 +220,36 @@ body {
   background: #e0e0e0;
   transform: translateY(-1px);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btn {
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #f5f5f5;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toggle-btn.active {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  color: white;
+}
+
+.toggle-btn:hover {
+  opacity: 0.8;
+}
+
+.toggle-indicator {
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .app-main {

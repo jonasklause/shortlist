@@ -6,6 +6,7 @@ import TodoItem from './TodoItem.vue'
 const props = defineProps<{
   date: string
   editingTodoId: string | null
+  showDone: boolean
 }>()
 
 const emit = defineEmits<{
@@ -18,6 +19,14 @@ const newTodoText = ref('')
 
 const dayList = computed(() => store.getDayList(props.date))
 
+const filteredTodos = computed(() => {
+  if (props.showDone) {
+    return dayList.value.todos
+  }
+  // Hide completed todos
+  return dayList.value.todos.filter(todo => !todo.completed)
+})
+
 const formattedDate = computed(() => {
   const date = new Date(props.date + 'T00:00:00')
   const weekday = date.toLocaleDateString('de-DE', { weekday: 'long' })
@@ -25,6 +34,11 @@ const formattedDate = computed(() => {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const year = String(date.getFullYear()).slice(-2)
   return `${weekday}, ${day}.${month}.${year}`
+})
+
+const isPastDay = computed(() => {
+  const today = new Date().toISOString().split('T')[0]!
+  return props.date < today
 })
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -94,7 +108,7 @@ const handleDropAtEnd = (e: DragEvent) => {
       @drop="handleDropAtEnd"
     >
       <div
-        v-for="(todo, index) in dayList.todos"
+        v-for="(todo, index) in filteredTodos"
         :key="todo.id"
         @dragover.stop="handleDragOver"
         @drop.stop="(e) => handleDrop(e, index)"
@@ -111,7 +125,7 @@ const handleDropAtEnd = (e: DragEvent) => {
           @move-down="handleMoveDown(todo.id)"
         />
       </div>
-    <div class="add-todo">
+    <div v-if="!isPastDay" class="add-todo">
       <input
         v-model="newTodoText"
         type="text"
@@ -120,10 +134,6 @@ const handleDropAtEnd = (e: DragEvent) => {
         @keydown="handleKeydown"
       />
     </div>
-
-      <div v-if="dayList.todos.length === 0" class="empty-state">
-        No todos yet. Add one above!
-      </div>
     </div>
   </div>
 </template>
@@ -183,13 +193,5 @@ const handleDropAtEnd = (e: DragEvent) => {
 
 .todos-container {
   min-height: 40px;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 12px;
-  color: #999;
-  font-style: italic;
-  font-size: 13px;
 }
 </style>
