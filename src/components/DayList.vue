@@ -27,7 +27,24 @@ const filteredTodos = computed(() => {
   return dayList.value.todos.filter(todo => !todo.completed)
 })
 
+const today = computed(() => new Date().toISOString().split('T')[0]!)
+
+const isToday = computed(() => props.date === today.value)
+
+const isTomorrow = computed(() => {
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  return props.date === tomorrow.toISOString().split('T')[0]
+})
+
 const formattedDate = computed(() => {
+  if (isToday.value) {
+    return 'Heute'
+  }
+  if (isTomorrow.value) {
+    return 'Morgen'
+  }
+
   const date = new Date(props.date + 'T00:00:00')
   const weekday = date.toLocaleDateString('de-DE', { weekday: 'long' })
   const day = String(date.getDate()).padStart(2, '0')
@@ -37,8 +54,7 @@ const formattedDate = computed(() => {
 })
 
 const isPastDay = computed(() => {
-  const today = new Date().toISOString().split('T')[0]!
-  return props.date < today
+  return props.date < today.value
 })
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -99,7 +115,7 @@ const handleDropAtEnd = (e: DragEvent) => {
 </script>
 
 <template>
-  <div class="day-list">
+  <div class="day-list" :class="{ 'is-today': isToday }">
     <h2 class="day-header">{{ formattedDate }}</h2>
 
     <div
@@ -141,6 +157,15 @@ const handleDropAtEnd = (e: DragEvent) => {
 <style scoped>
 .day-list {
   margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.day-list.is-today {
+  background-color: #f0f9f0;
+  border-left: 3px solid #4CAF50;
+  padding-left: 9px;
 }
 
 .day-header {
@@ -148,6 +173,13 @@ const handleDropAtEnd = (e: DragEvent) => {
   font-size: 14px;
   font-weight: 600;
   color: #333;
+  transition: all 0.2s ease;
+}
+
+.day-list.is-today .day-header {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2e7d32;
 }
 
 .add-todo {
